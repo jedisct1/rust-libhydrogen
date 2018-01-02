@@ -66,7 +66,7 @@ impl Into<[u8; ffi::randombytes_SEEDBYTES as usize]> for Seed {
 }
 
 impl Seed {
-    pub fn random() -> Seed {
+    pub fn gen() -> Seed {
         let mut seed_inner = [0u8; ffi::randombytes_SEEDBYTES as usize];
         buf_into(&mut seed_inner);
         Seed(seed_inner)
