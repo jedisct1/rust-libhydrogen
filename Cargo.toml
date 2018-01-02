@@ -1,0 +1,9 @@
+[package]
+name = "libhydrogen"
+version = "0.1.0"
+authors = ["Frank Denis <github@pureftpd.org>"]
+
+[dependencies]
+failure = "*"
+failure_derive = "*"
+libhydrogen-sys = "~0.4"
