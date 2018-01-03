@@ -1,6 +1,8 @@
+use errors::*;
 use ffi;
+use std::{mem, ptr};
 use std::cmp::Ordering;
-use std::mem;
+use std::ffi::CString;
 
 #[inline]
 pub fn memzero<T>(mut obj: T)
@@ -17,7 +19,7 @@ pub fn increment(n: &mut [u8]) {
     }
 }
 
-pub fn equal<'t, 'u, T, U>(b1: T, b2: U) -> bool
+pub fn equal<T, U>(b1: T, b2: U) -> bool
 where
     T: AsRef<[u8]>,
     U: AsRef<[u8]>,
@@ -59,4 +61,30 @@ where
         hex.truncate(hex_len - 1);
         String::from_utf8_unchecked(hex)
     }
+}
+
+pub fn hex2bin<T>(hex: &str, ignored_chars: &[u8]) -> Result<Vec<u8>, HydroError> {
+    let hex = hex.as_bytes();
+    let hex_len = hex.len();
+    let max_bin_len = hex_len / 2;
+    let mut bin = vec![0u8; max_bin_len];
+    let ignored_chars = CString::new(ignored_chars).map_err(|_| HydroError::InvalidInput)?;
+    let mut bin_len = 0usize;
+    let mut hex_end = ptr::null();
+    unsafe {
+        if ffi::hydro_hex2bin(
+            bin.as_mut_ptr(),
+            max_bin_len,
+            hex.as_ptr() as *const _,
+            hex_len,
+            ignored_chars.as_ptr(),
+            &mut bin_len,
+            &mut hex_end,
+        ) == 0
+        {
+            bin.truncate(bin_len);
+            return Ok(bin);
+        }
+    };
+    Err(HydroError::InvalidInput)
 }
