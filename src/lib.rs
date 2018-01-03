@@ -28,5 +28,7 @@ pub fn init() -> Result<(), HydroError> {
 }
 
 pub fn ensure_initialized() {
-    init().expect("Hydrogen library not initialized");
+    if unsafe { !INITIALIZED } {
+        panic!("Hydrogen library not initialized");
+    }
 }

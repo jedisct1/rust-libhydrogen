@@ -1,6 +1,7 @@
 use super::ensure_initialized;
 use ffi;
 
+#[derive(Debug, PartialEq, Eq, Copy, Clone)]
 pub struct Seed([u8; ffi::randombytes_SEEDBYTES as usize]);
 
 pub fn u32() -> u32 {
@@ -70,5 +71,42 @@ impl Seed {
         let mut seed_inner = [0u8; ffi::randombytes_SEEDBYTES as usize];
         buf_into(&mut seed_inner);
         Seed(seed_inner)
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use ::*;
+
+    #[test]
+    fn test_randombytes() {
+        init().unwrap();
+        assert_ne!(
+            randombytes::u32() | randombytes::u32() | randombytes::u32(),
+            0
+        );
+
+        for _ in 0..100 {
+            let max = randombytes::u32();
+            assert!(randombytes::uniform(max) < max)
+        }
+
+        let len = randombytes::uniform(100) as usize + 1;
+        let mut buf = randombytes::buf(len);
+        randombytes::buf_into(&mut buf);
+
+        let seed = randombytes::Seed::gen();
+        let buf = randombytes::buf_deterministic(len, &seed);
+        let mut buf2 = vec![0u8; len];
+        randombytes::buf_deterministic_into(&mut buf2, &seed);
+        assert_eq!(buf, buf2);
+
+        let seedx: [u8; 32] = seed.into();
+        let seedy: randombytes::Seed = seedx.into();
+        assert_eq!(seed, seedy);
+
+        randombytes::ratchet();
+
+        randombytes::reseed();
     }
 }
