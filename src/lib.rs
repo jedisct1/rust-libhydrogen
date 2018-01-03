@@ -3,8 +3,10 @@ extern crate failure;
 extern crate failure_derive;
 extern crate libhydrogen_sys as ffi;
 
-pub mod randombytes;
 pub mod errors;
+pub mod hash;
+pub mod randombytes;
+pub mod version;
 
 use errors::*;
 use std::sync::{Once, ONCE_INIT};

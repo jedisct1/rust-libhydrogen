@@ -6,4 +6,4 @@ authors = ["Frank Denis <github@pureftpd.org>"]
 [dependencies]
 failure = "*"
 failure_derive = "*"
-libhydrogen-sys = "~0.4"
+libhydrogen-sys = "~0.5"

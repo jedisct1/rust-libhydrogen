@@ -1,8 +1,10 @@
 use super::ensure_initialized;
 use ffi;
 
+pub const SEEDBYTES: usize = ffi::randombytes_SEEDBYTES as usize;
+
 #[derive(Debug, PartialEq, Eq, Copy, Clone)]
-pub struct Seed([u8; ffi::randombytes_SEEDBYTES as usize]);
+pub struct Seed([u8; SEEDBYTES]);
 
 pub fn u32() -> u32 {
     ensure_initialized();
@@ -54,21 +56,21 @@ pub fn reseed() {
     }
 }
 
-impl From<[u8; ffi::randombytes_SEEDBYTES as usize]> for Seed {
-    fn from(seed: [u8; 32]) -> Seed {
+impl From<[u8; SEEDBYTES]> for Seed {
+    fn from(seed: [u8; SEEDBYTES]) -> Seed {
         Seed(seed)
     }
 }
 
-impl Into<[u8; ffi::randombytes_SEEDBYTES as usize]> for Seed {
-    fn into(self) -> [u8; 32] {
+impl Into<[u8; SEEDBYTES]> for Seed {
+    fn into(self) -> [u8; SEEDBYTES] {
         self.0
     }
 }
 
 impl Seed {
     pub fn gen() -> Seed {
-        let mut seed_inner = [0u8; ffi::randombytes_SEEDBYTES as usize];
+        let mut seed_inner = [0u8; SEEDBYTES];
         buf_into(&mut seed_inner);
         Seed(seed_inner)
     }
@@ -101,7 +103,7 @@ mod tests {
         randombytes::buf_deterministic_into(&mut buf2, &seed);
         assert_eq!(buf, buf2);
 
-        let seedx: [u8; 32] = seed.into();
+        let seedx: [u8; randombytes::SEEDBYTES] = seed.into();
         let seedy: randombytes::Seed = seedx.into();
         assert_eq!(seed, seedy);
 
