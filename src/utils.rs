@@ -86,7 +86,7 @@ pub fn hex2bin(hex: &str, ignore: Option<&[u8]>) -> Result<Vec<u8>, HydroError> 
     } == 0
     {
         bin.truncate(bin_len);
-        return Ok(bin.into());
+        return Ok(bin);
     }
     Err(HydroError::InvalidInput)
 }
