@@ -63,32 +63,33 @@ where
     }
 }
 
-pub fn hex2bin<T>(hex: &str, ignored_chars: &[u8]) -> Result<T, HydroError>
-where
-    T: From<Vec<u8>>,
-{
+pub fn hex2bin(hex: &str, ignore: Option<&[u8]>) -> Result<Vec<u8>, HydroError> {
     let hex = hex.as_bytes();
     let hex_len = hex.len();
     let max_bin_len = hex_len / 2;
     let mut bin = vec![0u8; max_bin_len];
-    let ignored_chars = CString::new(ignored_chars).map_err(|_| HydroError::InvalidInput)?;
+    let ignore_p = match ignore {
+        Some(ignore) => CString::new(ignore)
+            .map_err(|_| HydroError::InvalidInput)?
+            .into_raw(),
+        None => ptr::null(),
+    };
     let mut bin_len = 0usize;
-    let mut hex_end = ptr::null();
-    unsafe {
-        if ffi::hydro_hex2bin(
+    if unsafe {
+        ffi::hydro_hex2bin(
             bin.as_mut_ptr(),
             max_bin_len,
             hex.as_ptr() as *const _,
             hex_len,
-            ignored_chars.as_ptr(),
+            ignore_p,
             &mut bin_len,
-            &mut hex_end,
-        ) == 0
-        {
-            bin.truncate(bin_len);
-            return Ok(bin.into());
-        }
-    };
+            ptr::null_mut(),
+        )
+    } == 0
+    {
+        bin.truncate(bin_len);
+        return Ok(bin.into());
+    }
     Err(HydroError::InvalidInput)
 }
 
@@ -101,8 +102,9 @@ mod tests {
         let bin = [69u8, 42];
         let hex = utils::bin2hex(bin);
         assert_eq!(hex, "452a");
-        let ic = [0u8; 0];
-        let bin2: Vec<u8> = utils::hex2bin(&hex, &ic).unwrap();
+        let bin2: Vec<u8> = utils::hex2bin(&hex, None).unwrap();
+        assert_eq!(bin, &bin2[..]);
+        let bin2: Vec<u8> = utils::hex2bin("#452a#", Some(b"#")).unwrap();
         assert_eq!(bin, &bin2[..]);
     }
 }
