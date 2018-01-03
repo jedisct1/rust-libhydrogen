@@ -92,15 +92,17 @@ pub fn hex2bin(hex: &str, ignore: Option<&[u8]>) -> Result<Vec<u8>, HydroError> 
 }
 
 pub fn pad(buf: &mut Vec<u8>, blocksize: usize) {
-    let mut padded_buflen = 0usize;
     buf.reserve(blocksize);
+    let unpadded_buflen = buf.len();
+    let mut padded_buflen = unpadded_buflen + blocksize;
     if unsafe {
+        buf.set_len(padded_buflen);
         ffi::hydro_pad(
             &mut padded_buflen,
             buf.as_mut_ptr(),
-            buf.len(),
+            unpadded_buflen,
             blocksize,
-            buf.len() + blocksize,
+            padded_buflen,
         )
     } != 0
     {
@@ -129,7 +131,12 @@ mod tests {
         assert_eq!(hex, "452a");
         let bin2: Vec<u8> = utils::hex2bin(&hex, None).unwrap();
         assert_eq!(bin, &bin2[..]);
-        let bin2: Vec<u8> = utils::hex2bin("#452a#", Some(b"#")).unwrap();
+        let mut bin2: Vec<u8> = utils::hex2bin("#452a#", Some(b"#")).unwrap();
+        assert_eq!(bin, &bin2[..]);
+
+        utils::pad(&mut bin2, 100);
+        assert_eq!(bin2.len(), 100);
+        utils::unpad(&mut bin2, 100).unwrap();
         assert_eq!(bin, &bin2[..]);
     }
 }
