@@ -38,13 +38,11 @@ pub fn compare(b1: &[u8], b2: &[u8]) -> Ordering {
     if b2.len() != len {
         panic!("Comparison of vectors with different lengths")
     }
-    unsafe {
-        match ffi::hydro_compare(b1.as_ptr(), b2.as_ptr(), len) {
-            -1 => Ordering::Less,
-            0 => Ordering::Equal,
-            1 => Ordering::Greater,
-            _ => unreachable!(),
-        }
+    match unsafe { ffi::hydro_compare(b1.as_ptr(), b2.as_ptr(), len) } {
+        -1 => Ordering::Less,
+        0 => Ordering::Equal,
+        1 => Ordering::Greater,
+        _ => unreachable!(),
     }
 }
 
@@ -91,6 +89,33 @@ pub fn hex2bin(hex: &str, ignore: Option<&[u8]>) -> Result<Vec<u8>, HydroError> 
         return Ok(bin.into());
     }
     Err(HydroError::InvalidInput)
+}
+
+pub fn pad(buf: &mut Vec<u8>, blocksize: usize) {
+    let mut padded_buflen = 0usize;
+    buf.reserve(blocksize);
+    if unsafe {
+        ffi::hydro_pad(
+            &mut padded_buflen,
+            buf.as_mut_ptr(),
+            buf.len(),
+            blocksize,
+            buf.len() + blocksize,
+        )
+    } != 0
+    {
+        panic!("Padding failed")
+    }
+    buf.truncate(padded_buflen);
+}
+
+pub fn unpad(buf: &mut Vec<u8>, blocksize: usize) -> Result<(), HydroError> {
+    let mut unpadded_buflen = 0usize;
+    if unsafe { ffi::hydro_unpad(&mut unpadded_buflen, buf.as_ptr(), buf.len(), blocksize) } != 0 {
+        return Err(HydroError::InvalidPadding);
+    }
+    buf.truncate(unpadded_buflen);
+    Ok(())
 }
 
 #[cfg(test)]
