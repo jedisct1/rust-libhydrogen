@@ -13,10 +13,10 @@ pub const BYTES_MIN: usize = ffi::hydro_hash_BYTES_MIN as usize;
 #[derive(Default, Debug, PartialEq, Eq, Copy, Clone)]
 pub struct Context([u8; CONTEXTBYTES]);
 
-#[derive(Debug, Copy, Clone)]
+#[derive(Debug, Clone)]
 pub struct Key([u8; KEYBYTES]);
 
-#[derive(Debug, Copy, Clone)]
+#[derive(Debug, Clone)]
 pub struct State(ffi::hydro_hash_state);
 
 pub struct DefaultHasher {
@@ -83,6 +83,18 @@ pub fn hash(
     let mut out = vec![0u8; out_len];
     hash_into(&mut out, input, context, key)?;
     Ok(out)
+}
+
+impl Drop for State {
+    fn drop(&mut self) {
+        utils::memzero(self)
+    }
+}
+
+impl Drop for Key {
+    fn drop(&mut self) {
+        utils::memzero(self)
+    }
 }
 
 impl From<[u8; KEYBYTES]> for Key {
@@ -168,7 +180,7 @@ mod tests {
 
         hash::hash(hash::BYTES_MIN, b"test message", &context, &key).unwrap();
 
-        let keyx: [u8; hash::KEYBYTES] = key.into();
+        let keyx: [u8; hash::KEYBYTES] = key.clone().into();
         let keyy: hash::Key = keyx.into();
         assert_eq!(key, keyy);
 

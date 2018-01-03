@@ -4,7 +4,7 @@ use utils;
 
 pub const SEEDBYTES: usize = ffi::randombytes_SEEDBYTES as usize;
 
-#[derive(Debug, Copy, Clone)]
+#[derive(Debug, Clone)]
 pub struct Seed([u8; SEEDBYTES]);
 
 #[inline]
@@ -61,6 +61,12 @@ pub fn reseed() {
     ensure_initialized();
     unsafe {
         ffi::randombytes_reseed();
+    }
+}
+
+impl Drop for Seed {
+    fn drop(&mut self) {
+        utils::memzero(self)
     }
 }
 
@@ -127,7 +133,7 @@ mod tests {
         randombytes::buf_deterministic_into(&mut buf2, &seed);
         assert_eq!(buf, buf2);
 
-        let seedx: [u8; randombytes::SEEDBYTES] = seed.into();
+        let seedx: [u8; randombytes::SEEDBYTES] = seed.clone().into();
         let seedy: randombytes::Seed = seedx.into();
         assert_eq!(seed, seedy);
 
