@@ -63,7 +63,10 @@ where
     }
 }
 
-pub fn hex2bin<T>(hex: &str, ignored_chars: &[u8]) -> Result<Vec<u8>, HydroError> {
+pub fn hex2bin<T>(hex: &str, ignored_chars: &[u8]) -> Result<T, HydroError>
+where
+    T: From<Vec<u8>>,
+{
     let hex = hex.as_bytes();
     let hex_len = hex.len();
     let max_bin_len = hex_len / 2;
@@ -83,8 +86,23 @@ pub fn hex2bin<T>(hex: &str, ignored_chars: &[u8]) -> Result<Vec<u8>, HydroError
         ) == 0
         {
             bin.truncate(bin_len);
-            return Ok(bin);
+            return Ok(bin.into());
         }
     };
     Err(HydroError::InvalidInput)
+}
+
+#[cfg(test)]
+mod tests {
+    use ::*;
+
+    #[test]
+    fn test_utils() {
+        let bin = [69u8, 42];
+        let hex = utils::bin2hex(bin);
+        assert_eq!(hex, "452a");
+        let ic = [0u8; 0];
+        let bin2: Vec<u8> = utils::hex2bin(&hex, &ic).unwrap();
+        assert_eq!(bin, &bin2[..]);
+    }
 }
