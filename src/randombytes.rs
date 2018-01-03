@@ -1,21 +1,25 @@
 use super::ensure_initialized;
 use ffi;
+use utils;
 
 pub const SEEDBYTES: usize = ffi::randombytes_SEEDBYTES as usize;
 
-#[derive(Debug, PartialEq, Eq, Copy, Clone)]
+#[derive(Debug, Copy, Clone)]
 pub struct Seed([u8; SEEDBYTES]);
 
+#[inline]
 pub fn u32() -> u32 {
     ensure_initialized();
     unsafe { ffi::randombytes_random() }
 }
 
+#[inline]
 pub fn uniform(upper_bound: u32) -> u32 {
     ensure_initialized();
     unsafe { ffi::randombytes_uniform(upper_bound) }
 }
 
+#[inline]
 pub fn buf_into(out: &mut [u8]) {
     ensure_initialized();
     unsafe {
@@ -29,6 +33,7 @@ pub fn buf(out_len: usize) -> Vec<u8> {
     out
 }
 
+#[inline]
 pub fn buf_deterministic_into(out: &mut [u8], seed: &Seed) {
     ensure_initialized();
     unsafe {
@@ -36,12 +41,14 @@ pub fn buf_deterministic_into(out: &mut [u8], seed: &Seed) {
     }
 }
 
+#[inline]
 pub fn buf_deterministic(out_len: usize, seed: &Seed) -> Vec<u8> {
     let mut out = vec![0u8; out_len];
     buf_deterministic_into(&mut out, seed);
     out
 }
 
+#[inline]
 pub fn ratchet() {
     ensure_initialized();
     unsafe {
@@ -49,6 +56,7 @@ pub fn ratchet() {
     }
 }
 
+#[inline]
 pub fn reseed() {
     ensure_initialized();
     unsafe {
@@ -57,16 +65,32 @@ pub fn reseed() {
 }
 
 impl From<[u8; SEEDBYTES]> for Seed {
+    #[inline]
     fn from(seed: [u8; SEEDBYTES]) -> Seed {
         Seed(seed)
     }
 }
 
 impl Into<[u8; SEEDBYTES]> for Seed {
+    #[inline]
     fn into(self) -> [u8; SEEDBYTES] {
         self.0
     }
 }
+
+impl AsRef<[u8]> for Seed {
+    fn as_ref(&self) -> &[u8] {
+        &self.0 as &[u8]
+    }
+}
+
+impl PartialEq for Seed {
+    fn eq(&self, other: &Self) -> bool {
+        utils::equal(self, other)
+    }
+}
+
+impl Eq for Seed {}
 
 impl Seed {
     pub fn gen() -> Seed {

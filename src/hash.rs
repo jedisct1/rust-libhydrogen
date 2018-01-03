@@ -2,6 +2,7 @@ use super::ensure_initialized;
 use errors::*;
 use ffi;
 use std::mem;
+use utils;
 
 pub const CONTEXTBYTES: usize = ffi::hydro_hash_CONTEXTBYTES as usize;
 pub const KEYBYTES: usize = ffi::hydro_hash_KEYBYTES as usize;
@@ -12,10 +13,10 @@ pub const BYTES_MIN: usize = ffi::hydro_hash_BYTES_MIN as usize;
 #[derive(Default, Debug, PartialEq, Eq, Copy, Clone)]
 pub struct Context([u8; CONTEXTBYTES]);
 
-#[derive(Debug, PartialEq, Eq, Copy, Clone)]
+#[derive(Debug, Copy, Clone)]
 pub struct Key([u8; KEYBYTES]);
 
-#[derive(Debug, PartialEq, Eq, Copy, Clone)]
+#[derive(Debug, Copy, Clone)]
 pub struct State(ffi::hydro_hash_state);
 
 pub struct DefaultHasher {
@@ -23,6 +24,7 @@ pub struct DefaultHasher {
 }
 
 impl DefaultHasher {
+    #[inline]
     fn new(key: &Key, context: &Context) -> DefaultHasher {
         unsafe {
             let mut state: State = mem::uninitialized();
@@ -31,6 +33,7 @@ impl DefaultHasher {
         }
     }
 
+    #[inline]
     pub fn update(&mut self, input: &[u8]) {
         unsafe {
             ffi::hydro_hash_update(&mut self.state.0, input.as_ptr() as *const _, input.len());
@@ -54,6 +57,7 @@ impl DefaultHasher {
     }
 }
 
+#[inline]
 pub fn init(context: &Context, key: &Key) -> DefaultHasher {
     DefaultHasher::new(key, context)
 }
@@ -82,16 +86,32 @@ pub fn hash(
 }
 
 impl From<[u8; KEYBYTES]> for Key {
+    #[inline]
     fn from(key: [u8; KEYBYTES]) -> Key {
         Key(key)
     }
 }
 
 impl Into<[u8; KEYBYTES]> for Key {
+    #[inline]
     fn into(self) -> [u8; KEYBYTES] {
         self.0
     }
 }
+
+impl AsRef<[u8]> for Key {
+    fn as_ref(&self) -> &[u8] {
+        &self.0 as &[u8]
+    }
+}
+
+impl PartialEq for Key {
+    fn eq(&self, other: &Self) -> bool {
+        utils::equal(self, other)
+    }
+}
+
+impl Eq for Key {}
 
 impl Key {
     pub fn gen() -> Key {
@@ -118,12 +138,14 @@ impl From<&'static str> for Context {
 }
 
 impl From<[u8; CONTEXTBYTES]> for Context {
+    #[inline]
     fn from(context: [u8; CONTEXTBYTES]) -> Context {
         Context(context)
     }
 }
 
 impl Into<[u8; CONTEXTBYTES]> for Context {
+    #[inline]
     fn into(self) -> [u8; CONTEXTBYTES] {
         self.0
     }
