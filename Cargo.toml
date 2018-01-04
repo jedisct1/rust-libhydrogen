@@ -10,4 +10,4 @@ repository = "https://github.com/jedisct1/rust-libhydrogen"
 [dependencies]
 failure = "~0.1"
 failure_derive = "~0.1"
-libhydrogen-sys = "~0.6.2"
+libhydrogen-sys = "~0.7"
