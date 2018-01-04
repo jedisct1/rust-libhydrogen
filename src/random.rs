@@ -2,7 +2,7 @@ use super::ensure_initialized;
 use ffi;
 use utils;
 
-pub const SEEDBYTES: usize = ffi::randombytes_SEEDBYTES as usize;
+pub const SEEDBYTES: usize = ffi::hydro_random_SEEDBYTES as usize;
 
 #[derive(Debug, Clone)]
 pub struct Seed([u8; SEEDBYTES]);
@@ -10,20 +10,20 @@ pub struct Seed([u8; SEEDBYTES]);
 #[inline]
 pub fn u32() -> u32 {
     ensure_initialized();
-    unsafe { ffi::randombytes_random() }
+    unsafe { ffi::hydro_random_u32() }
 }
 
 #[inline]
 pub fn uniform(upper_bound: u32) -> u32 {
     ensure_initialized();
-    unsafe { ffi::randombytes_uniform(upper_bound) }
+    unsafe { ffi::hydro_random_uniform(upper_bound) }
 }
 
 #[inline]
 pub fn buf_into(out: &mut [u8]) {
     ensure_initialized();
     unsafe {
-        ffi::randombytes_buf(out.as_mut_ptr() as *mut _, out.len());
+        ffi::hydro_random_buf(out.as_mut_ptr() as *mut _, out.len());
     }
 }
 
@@ -37,7 +37,7 @@ pub fn buf(out_len: usize) -> Vec<u8> {
 pub fn buf_deterministic_into(out: &mut [u8], seed: &Seed) {
     ensure_initialized();
     unsafe {
-        ffi::randombytes_buf_deterministic(out.as_mut_ptr() as *mut _, out.len(), seed.0.as_ptr())
+        ffi::hydro_random_buf_deterministic(out.as_mut_ptr() as *mut _, out.len(), seed.0.as_ptr())
     }
 }
 
@@ -52,7 +52,7 @@ pub fn buf_deterministic(out_len: usize, seed: &Seed) -> Vec<u8> {
 pub fn ratchet() {
     ensure_initialized();
     unsafe {
-        ffi::randombytes_ratchet();
+        ffi::hydro_random_ratchet();
     }
 }
 
@@ -60,7 +60,7 @@ pub fn ratchet() {
 pub fn reseed() {
     ensure_initialized();
     unsafe {
-        ffi::randombytes_reseed();
+        ffi::hydro_random_reseed();
     }
 }
 
@@ -113,32 +113,29 @@ mod tests {
     #[test]
     fn test_randombytes() {
         init().unwrap();
-        assert_ne!(
-            randombytes::u32() | randombytes::u32() | randombytes::u32(),
-            0
-        );
+        assert_ne!(random::u32() | random::u32() | random::u32(), 0);
 
         for _ in 0..100 {
-            let max = randombytes::u32();
-            assert!(randombytes::uniform(max) < max)
+            let max = random::u32();
+            assert!(random::uniform(max) < max)
         }
 
-        let len = randombytes::uniform(100) as usize + 1;
-        let mut buf = randombytes::buf(len);
-        randombytes::buf_into(&mut buf);
+        let len = random::uniform(100) as usize + 1;
+        let mut buf = random::buf(len);
+        random::buf_into(&mut buf);
 
-        let seed = randombytes::Seed::gen();
-        let buf = randombytes::buf_deterministic(len, &seed);
+        let seed = random::Seed::gen();
+        let buf = random::buf_deterministic(len, &seed);
         let mut buf2 = vec![0u8; len];
-        randombytes::buf_deterministic_into(&mut buf2, &seed);
+        random::buf_deterministic_into(&mut buf2, &seed);
         assert_eq!(buf, buf2);
 
-        let seedx: [u8; randombytes::SEEDBYTES] = seed.clone().into();
-        let seedy: randombytes::Seed = seedx.into();
+        let seedx: [u8; random::SEEDBYTES] = seed.clone().into();
+        let seedy: random::Seed = seedx.into();
         assert_eq!(seed, seedy);
 
-        randombytes::ratchet();
+        random::ratchet();
 
-        randombytes::reseed();
+        random::reseed();
     }
 }

@@ -6,7 +6,7 @@ extern crate libhydrogen_sys as ffi;
 pub mod errors;
 pub mod hash;
 pub mod kdf;
-pub mod randombytes;
+pub mod random;
 pub mod secretbox;
 pub mod sign;
 pub mod utils;
