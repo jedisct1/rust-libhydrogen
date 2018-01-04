@@ -72,51 +72,48 @@ pub fn hex2bin(hex: &str, ignore: Option<&[u8]>) -> Result<Vec<u8>, HydroError> 
             .into_raw(),
         None => ptr::null(),
     };
-    let mut bin_len = 0usize;
-    if unsafe {
+    let bin_len = unsafe {
         ffi::hydro_hex2bin(
             bin.as_mut_ptr(),
             max_bin_len,
             hex.as_ptr() as *const _,
             hex_len,
             ignore_p,
-            &mut bin_len,
             ptr::null_mut(),
         )
-    } == 0
-    {
-        bin.truncate(bin_len);
-        return Ok(bin);
+    };
+    if bin_len < 0 {
+        return Err(HydroError::InvalidInput);
     }
-    Err(HydroError::InvalidInput)
+    bin.truncate(bin_len as usize);
+    Ok(bin)
 }
 
 pub fn pad(buf: &mut Vec<u8>, blocksize: usize) {
     buf.reserve(blocksize);
     let unpadded_buflen = buf.len();
-    let mut padded_buflen = unpadded_buflen + blocksize;
-    if unsafe {
-        buf.set_len(padded_buflen);
+    let max_padded_buflen = unpadded_buflen + blocksize;
+    let padded_buflen = unsafe {
+        buf.set_len(max_padded_buflen);
         ffi::hydro_pad(
-            &mut padded_buflen,
             buf.as_mut_ptr(),
             unpadded_buflen,
             blocksize,
-            padded_buflen,
+            max_padded_buflen,
         )
-    } != 0
-    {
+    };
+    if padded_buflen < 0 {
         panic!("Padding failed")
     }
-    buf.truncate(padded_buflen);
+    buf.truncate(padded_buflen as usize);
 }
 
 pub fn unpad(buf: &mut Vec<u8>, blocksize: usize) -> Result<(), HydroError> {
-    let mut unpadded_buflen = 0usize;
-    if unsafe { ffi::hydro_unpad(&mut unpadded_buflen, buf.as_ptr(), buf.len(), blocksize) } != 0 {
+    let unpadded_buflen = unsafe { ffi::hydro_unpad(buf.as_ptr(), buf.len(), blocksize) };
+    if unpadded_buflen < 0 {
         return Err(HydroError::InvalidPadding);
     }
-    buf.truncate(unpadded_buflen);
+    buf.truncate(unpadded_buflen as usize);
     Ok(())
 }
 
