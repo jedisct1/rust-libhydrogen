@@ -15,4 +15,7 @@ Features:
 
 This crate implement high-level Rust bindings.
 
-# [Libhydrogen documentation](https://github.com/jedisct1/libhydrogen/wiki)
+# Documentation
+
+* [Rust API documentation](https://docs.rs/libhydrogen)
+* [Original libhydrogen documentation](https://github.com/jedisct1/libhydrogen/wiki)
