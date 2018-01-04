@@ -7,6 +7,7 @@ pub mod errors;
 pub mod hash;
 pub mod kdf;
 pub mod randombytes;
+pub mod secretbox;
 pub mod sign;
 pub mod utils;
 pub mod version;
