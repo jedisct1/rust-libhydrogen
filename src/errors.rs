@@ -4,4 +4,6 @@ pub enum HydroError {
     #[fail(display = "Unsupported output length")] UnsupportedOutputLength,
     #[fail(display = "Invalid input")] InvalidInput,
     #[fail(display = "Invalid padding")] InvalidPadding,
+    #[fail(display = "Invalid key")] InvalidKey,
+    #[fail(display = "Invalid signature")] InvalidSignature,
 }

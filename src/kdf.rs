@@ -121,5 +121,9 @@ mod tests {
         let key = kdf::Key::gen();
         let subkey = kdf::derive_from_key(50, 1, &context, &key).unwrap();
         assert_eq!(subkey.len(), 50);
+
+        let contextx: [u8; kdf::CONTEXTBYTES] = context.into();
+        let contexty: kdf::Context = contextx.into();
+        assert_eq!(context, contexty);
     }
 }
