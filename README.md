@@ -1,3 +1,5 @@
+[![dependency status](https://deps.rs/repo/github/jedisct1/rust-libhydrogen/status.svg)](https://deps.rs/repo/github/jedisct1/rust-libhydrogen)
+
 ![libhydrogen for rust](https://raw.github.com/jedisct1/libhydrogen/master/logo.png)
 ====================
 
