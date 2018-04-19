@@ -1,3 +1,23 @@
+//! Secret-key authenticated encryption
+//!
+//! A single key is used both to encrypt/sign and verify/decrypt messages. For this reason, it is critical to keep the key confidential.
+//!
+//! # Examples
+//! ```
+//! let key_data =[64,33,195,234,107,63,107,237,113,199,
+//!     183,130,203,194,247,31,76,51,203,163,
+//!     126,238,206,125,225,74,103,105,133,181,
+//!     61,189];
+//!
+//! let key         = libhydrogen::secretbox::Key::from(key_data);
+//! let context     = libhydrogen::secretbox::Context::default();
+//! let ciphertext  = libhydrogen::secretbox::encrypt(b"hello world", 1, &context, &key);
+//!
+//! let decrypted   = libhydrogen::secretbox::decrypt(&ciphertext, 1, &context, &key).unwrap();
+//!
+//! println!("{}", String::from_utf8(decrypted).unwrap());
+//! ```
+
 use super::ensure_initialized;
 use errors::*;
 use ffi;
