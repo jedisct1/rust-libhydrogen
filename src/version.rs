@@ -1,4 +1,4 @@
-use ffi;
+use crate::ffi;
 
 #[inline]
 pub fn major() -> u32 {
@@ -16,7 +16,7 @@ pub fn string() -> String {
 
 #[cfg(test)]
 mod tests {
-    use ::*;
+    use crate::*;
 
     #[test]
     fn test_version() {

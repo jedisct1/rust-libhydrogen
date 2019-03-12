@@ -1,13 +1,14 @@
 [package]
 name = "libhydrogen"
-version = "0.1.1"
+version = "0.1.2"
 authors = ["Frank Denis <github@pureftpd.org>"]
 description = "A modern and easy to use cryptography library"
 license = "ISC"
 homepage = "https://github.com/jedisct1/rust-libhydrogen"
 repository = "https://github.com/jedisct1/rust-libhydrogen"
+edition = "2018"
 
 [dependencies]
-failure = "~0.1"
-failure_derive = "~0.1"
-libhydrogen-sys = "~0.7"
+failure = "0.1"
+failure_derive = "0.1"
+libhydrogen-sys = "0.7.2"

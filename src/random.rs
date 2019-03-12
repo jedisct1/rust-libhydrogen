@@ -1,6 +1,6 @@
 use super::ensure_initialized;
-use ffi;
-use utils;
+use crate::ffi;
+use crate::utils;
 
 pub const SEEDBYTES: usize = ffi::hydro_random_SEEDBYTES as usize;
 
@@ -108,7 +108,7 @@ impl Seed {
 
 #[cfg(test)]
 mod tests {
-    use ::*;
+    use crate::*;
 
     #[test]
     fn test_randombytes() {

@@ -1,7 +1,7 @@
-extern crate failure;
+use failure;
 #[macro_use]
 extern crate failure_derive;
-extern crate libhydrogen_sys as ffi;
+use libhydrogen_sys as ffi;
 
 pub mod errors;
 pub mod hash;
@@ -12,7 +12,7 @@ pub mod sign;
 pub mod utils;
 pub mod version;
 
-use errors::*;
+use crate::errors::*;
 use std::sync::{Once, ONCE_INIT};
 
 static INIT: Once = ONCE_INIT;

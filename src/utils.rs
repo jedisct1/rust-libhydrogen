@@ -1,8 +1,8 @@
-use errors::*;
-use ffi;
-use std::{mem, ptr};
+use crate::errors::*;
+use crate::ffi;
 use std::cmp::Ordering;
 use std::ffi::CString;
+use std::{mem, ptr};
 
 #[inline]
 pub fn memzero<T>(mut obj: T)
@@ -119,7 +119,7 @@ pub fn unpad(buf: &mut Vec<u8>, blocksize: usize) -> Result<(), HydroError> {
 
 #[cfg(test)]
 mod tests {
-    use ::*;
+    use crate::*;
 
     #[test]
     fn test_utils() {

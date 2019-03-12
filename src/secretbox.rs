@@ -1,8 +1,8 @@
 use super::ensure_initialized;
-use errors::*;
-use ffi;
+use crate::errors::*;
+use crate::ffi;
+use crate::utils;
 use std::mem;
-use utils;
 
 pub const CONTEXTBYTES: usize = ffi::hydro_secretbox_CONTEXTBYTES as usize;
 pub const HEADERBYTES: usize = ffi::hydro_secretbox_HEADERBYTES as usize;
@@ -206,7 +206,7 @@ impl Into<[u8; CONTEXTBYTES]> for Context {
 
 #[cfg(test)]
 mod tests {
-    use ::*;
+    use crate::*;
 
     #[test]
     fn test_secretbox() {
