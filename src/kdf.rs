@@ -1,3 +1,30 @@
+//! Key derivation
+//!
+//! Multiple secret subkeys can be derived from a single, high-entropy master key.
+//!
+//! With the master key and a key identifier, a subkey can be deterministically computed.
+//! However, given a subkey, an attacker cannot compute the master key nor any other subkeys.
+//!
+//! The derive_from_key API can derive up to 2^64 keys from a single master key and context,
+//! and individual subkeys can have an arbitrary length between 128 (16 bytes) and 524,280 bits (65535 bytes).
+//!
+//! # Examples
+//! ```
+//! // these must come from a high entropy source such as a hardware RNG.
+//! // A password is not ok.
+//! let master_key_data=[64,33,195,234,107,63,107,237,113,199,
+//!     183,130,203,194,247,31,76,51,203,163,
+//!     126,238,206,125,225,74,103,105,133,181,
+//!     61,189];
+//!
+//! let master  = libhydrogen::kdf::Key::from(master_key_data);
+//! let context = libhydrogen::kdf::Context::default();
+//!
+//! let subkey1 = libhydrogen::kdf::derive_from_key(32, 1, &context, &master).unwrap();
+//! let subkey2 = libhydrogen::kdf::derive_from_key(32, 2, &context, &master).unwrap();
+//! ```
+
+
 use super::ensure_initialized;
 use crate::errors::*;
 use crate::ffi;
@@ -15,6 +42,7 @@ pub struct Context([u8; CONTEXTBYTES]);
 #[derive(Debug, Clone)]
 pub struct Key([u8; KEYBYTES]);
 
+/// Derives a subkey_id-th subkey of length subkey_len bytes using the master key and the context.
 pub fn derive_from_key(
     subkey_len: usize,
     subkey_id: u64,
