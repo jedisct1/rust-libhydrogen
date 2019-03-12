@@ -24,7 +24,6 @@
 //! let subkey2 = libhydrogen::kdf::derive_from_key(32, 2, &context, &master).unwrap();
 //! ```
 
-
 use super::ensure_initialized;
 use crate::errors::*;
 use crate::ffi;
