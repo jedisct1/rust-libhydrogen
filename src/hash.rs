@@ -28,14 +28,8 @@ impl DefaultHasher {
     fn new(key: &Key, context: &Context) -> DefaultHasher {
         unsafe {
             let mut state: State = mem::uninitialized();
-            ffi::hydro_hash_init(
-                &mut state.0,
-                context.0.as_ptr() as *const _,
-                key.0.as_ptr(),
-            );
-            DefaultHasher {
-                state
-            }
+            ffi::hydro_hash_init(&mut state.0, context.0.as_ptr() as *const _, key.0.as_ptr());
+            DefaultHasher { state }
         }
     }
 
