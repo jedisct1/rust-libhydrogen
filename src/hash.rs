@@ -2,7 +2,7 @@ use super::ensure_initialized;
 use crate::errors::*;
 use crate::ffi;
 use crate::utils;
-use std::mem::MaybeUninit;
+use std::mem;
 
 pub const CONTEXTBYTES: usize = ffi::hydro_hash_CONTEXTBYTES as usize;
 pub const KEYBYTES: usize = ffi::hydro_hash_KEYBYTES as usize;
@@ -27,14 +27,14 @@ impl DefaultHasher {
     #[inline]
     fn new(key: &Key, context: &Context) -> DefaultHasher {
         unsafe {
-            let mut state = MaybeUninit::<State>::uninit();
+            let mut state: State = mem::uninitialized();
             ffi::hydro_hash_init(
-                &mut (*state.as_mut_ptr()).0,
+                &mut state.0,
                 context.0.as_ptr() as *const _,
                 key.0.as_ptr(),
             );
             DefaultHasher {
-                state: state.assume_init(),
+                state
             }
         }
     }
@@ -135,9 +135,9 @@ impl Key {
     pub fn gen() -> Key {
         ensure_initialized();
         unsafe {
-            let mut key = MaybeUninit::<Key>::uninit();
-            ffi::hydro_hash_keygen((*key.as_mut_ptr()).0.as_mut_ptr());
-            key.assume_init()
+            let mut key: Key = mem::uninitialized();
+            ffi::hydro_hash_keygen(key.0.as_mut_ptr());
+            key
         }
     }
 }
