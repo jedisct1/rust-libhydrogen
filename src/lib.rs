@@ -13,28 +13,30 @@ pub mod utils;
 pub mod version;
 
 use crate::errors::*;
-use std::sync::{Once, ONCE_INIT};
+use std::sync::{
+    atomic::{AtomicBool, Ordering},
+    Once, ONCE_INIT,
+};
 
 static INIT: Once = ONCE_INIT;
-static mut INITIALIZED: bool = false;
+static INITIALIZED: AtomicBool = AtomicBool::new(false);
 
 pub fn init() -> Result<(), HydroError> {
-    unsafe {
-        INIT.call_once(|| {
-            if ffi::hydro_init() >= 0 {
-                INITIALIZED = true;
-            }
-        });
-        if INITIALIZED {
-            Ok(())
-        } else {
-            Err(HydroError::InitError)
+    INIT.call_once(|| {
+        if unsafe { ffi::hydro_init() } >= 0 {
+            INITIALIZED.store(true, Ordering::Release);
         }
+    });
+    if INITIALIZED.load(Ordering::Acquire) {
+        Ok(())
+    } else {
+        Err(HydroError::InitError)
     }
 }
 
 pub fn ensure_initialized() {
-    if unsafe { !INITIALIZED } {
-        panic!("Hydrogen library not initialized");
-    }
+    assert!(
+        INITIALIZED.load(Ordering::Acquire),
+        "Hydrogen library not initialized"
+    )
 }
