@@ -1,6 +1,6 @@
 [package]
 name = "libhydrogen"
-version = "0.1.5"
+version = "0.2.0"
 authors = ["Frank Denis <github@pureftpd.org>"]
 description = "A modern and easy to use cryptography library"
 license = "ISC"
@@ -11,4 +11,4 @@ edition = "2018"
 [dependencies]
 failure = "0.1"
 failure_derive = "0.1"
-libhydrogen-sys = "0.7.3"
+libhydrogen-sys = "0.8.0"
