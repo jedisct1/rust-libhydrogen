@@ -15,10 +15,10 @@ pub mod version;
 use crate::errors::*;
 use std::sync::{
     atomic::{AtomicBool, Ordering},
-    Once, ONCE_INIT,
+    Once,
 };
 
-static INIT: Once = ONCE_INIT;
+static INIT: Once = Once::new();
 static INITIALIZED: AtomicBool = AtomicBool::new(false);
 
 pub fn init() -> Result<(), HydroError> {
