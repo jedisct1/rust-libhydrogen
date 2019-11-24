@@ -1,3 +1,4 @@
+#[allow(clippy::trivially_copy_pass_by_ref)]
 use failure;
 #[macro_use]
 extern crate failure_derive;
