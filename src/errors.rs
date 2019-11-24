@@ -1,19 +1,21 @@
-#[derive(Debug, Fail)]
+pub use anyhow::{anyhow, bail, ensure, Error};
+
+#[derive(Debug, thiserror::Error)]
 pub enum HydroError {
-    #[fail(display = "Invalid input")]
+    #[error("Invalid input")]
     InvalidInput,
-    #[fail(display = "Invalid key")]
+    #[error("Invalid key")]
     InvalidKey,
-    #[fail(display = "Invalid padding")]
+    #[error("Invalid padding")]
     InvalidPadding,
-    #[fail(display = "Invalid probe")]
+    #[error("Invalid probe")]
     InvalidProbe,
-    #[fail(display = "Invalid signature")]
+    #[error("Invalid signature")]
     InvalidSignature,
-    #[fail(display = "Unable to decrypt the ciphertext")]
+    #[error("Unable to decrypt the ciphertext")]
     DecryptionError,
-    #[fail(display = "Unable to initialized the hydrogen library")]
+    #[error("Unable to initialized the hydrogen library")]
     InitError,
-    #[fail(display = "Unsupported output length")]
+    #[error("Unsupported output length")]
     UnsupportedOutputLength,
 }

@@ -1,7 +1,4 @@
 #[allow(clippy::trivially_copy_pass_by_ref)]
-use failure;
-#[macro_use]
-extern crate failure_derive;
 use libhydrogen_sys as ffi;
 
 pub mod errors;
