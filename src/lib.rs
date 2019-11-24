@@ -1,4 +1,4 @@
-#[allow(clippy::trivially_copy_pass_by_ref)]
+#![allow(clippy::trivially_copy_pass_by_ref)]
 use libhydrogen_sys as ffi;
 
 pub mod errors;
