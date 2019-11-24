@@ -28,7 +28,7 @@ use super::ensure_initialized;
 use crate::errors::*;
 use crate::ffi;
 use crate::utils;
-use std::mem;
+use std::mem::MaybeUninit;
 
 pub const CONTEXTBYTES: usize = ffi::hydro_kdf_CONTEXTBYTES as usize;
 pub const KEYBYTES: usize = ffi::hydro_kdf_KEYBYTES as usize;
@@ -102,9 +102,9 @@ impl Key {
     pub fn gen() -> Key {
         ensure_initialized();
         unsafe {
-            let mut key: Key = mem::uninitialized();
-            ffi::hydro_kdf_keygen(key.0.as_mut_ptr());
-            key
+            let mut key = MaybeUninit::<Key>::uninit();
+            ffi::hydro_kdf_keygen((*key.as_mut_ptr()).0.as_mut_ptr());
+            key.assume_init()
         }
     }
 }

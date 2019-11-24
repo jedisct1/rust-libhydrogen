@@ -2,7 +2,7 @@ use super::ensure_initialized;
 use crate::errors::*;
 use crate::ffi;
 use crate::utils;
-use std::mem;
+use std::mem::{self, MaybeUninit};
 
 pub const BYTES: usize = ffi::hydro_sign_BYTES as usize;
 pub const CONTEXTBYTES: usize = ffi::hydro_sign_CONTEXTBYTES as usize;
@@ -38,9 +38,11 @@ pub struct Sign {
 impl Sign {
     fn new(context: &Context) -> Sign {
         unsafe {
-            let mut state: State = mem::uninitialized();
-            ffi::hydro_sign_init(&mut state.0, context.0.as_ptr() as *const _);
-            Sign { state }
+            let mut state = MaybeUninit::<State>::uninit();
+            ffi::hydro_sign_init(&mut (*state.as_mut_ptr()).0, context.0.as_ptr() as *const _);
+            Sign {
+                state: state.assume_init(),
+            }
         }
     }
 
@@ -53,16 +55,16 @@ impl Sign {
 
     pub fn finish_create(mut self, secret_key: &SecretKey) -> Result<Signature, HydroError> {
         unsafe {
-            let mut signature: Signature = mem::uninitialized();
+            let mut signature = MaybeUninit::<Signature>::uninit();
             if ffi::hydro_sign_final_create(
                 &mut self.state.0,
-                signature.0.as_mut_ptr(),
+                (*signature.as_mut_ptr()).0.as_mut_ptr(),
                 secret_key.0.as_ptr(),
             ) != 0
             {
                 return Err(HydroError::InvalidKey);
             }
-            Ok(signature)
+            Ok(signature.assume_init())
         }
     }
 
@@ -203,16 +205,23 @@ impl KeyPair {
     pub fn gen() -> KeyPair {
         ensure_initialized();
         unsafe {
-            let mut keypair_c: ffi::hydro_sign_keypair = mem::uninitialized();
-            ffi::hydro_sign_keygen(&mut keypair_c);
-            let mut keypair: KeyPair = mem::uninitialized();
-            keypair.public_key.0.copy_from_slice(&keypair_c.pk);
-            keypair.secret_key.0.copy_from_slice(&keypair_c.sk);
+            let mut keypair_c = MaybeUninit::<ffi::hydro_sign_keypair>::uninit();
+            ffi::hydro_sign_keygen(keypair_c.as_mut_ptr());
+            let mut keypair_c = keypair_c.assume_init();
+            let mut keypair = MaybeUninit::<KeyPair>::uninit();
+            (*keypair.as_mut_ptr())
+                .public_key
+                .0
+                .copy_from_slice(&keypair_c.pk);
+            (*keypair.as_mut_ptr())
+                .secret_key
+                .0
+                .copy_from_slice(&keypair_c.sk);
             ffi::hydro_memzero(
                 &mut keypair_c as *mut _ as *mut _,
                 mem::size_of_val(&keypair_c),
             );
-            keypair
+            keypair.assume_init()
         }
     }
 }
