@@ -3,6 +3,7 @@ use crate::errors::*;
 use crate::ffi;
 use crate::utils;
 use std::mem::MaybeUninit;
+use std::ptr;
 
 pub const CONTEXTBYTES: usize = ffi::hydro_hash_CONTEXTBYTES as usize;
 pub const KEYBYTES: usize = ffi::hydro_hash_KEYBYTES as usize;
@@ -25,13 +26,17 @@ pub struct DefaultHasher {
 
 impl DefaultHasher {
     #[inline]
-    fn new(key: &Key, context: &Context) -> DefaultHasher {
+    fn new(key: Option<&Key>, context: &Context) -> DefaultHasher {
         unsafe {
             let mut state = MaybeUninit::<State>::uninit();
+            let key = match key {
+                None => ptr::null(),
+                Some(key) => key.0.as_ptr(),
+            };
             ffi::hydro_hash_init(
                 &mut (*state.as_mut_ptr()).0,
                 context.0.as_ptr() as *const _,
-                key.0.as_ptr(),
+                key,
             );
             DefaultHasher {
                 state: state.assume_init(),
@@ -64,7 +69,7 @@ impl DefaultHasher {
 }
 
 #[inline]
-pub fn init(context: &Context, key: &Key) -> DefaultHasher {
+pub fn init(context: &Context, key: Option<&Key>) -> DefaultHasher {
     DefaultHasher::new(key, context)
 }
 
@@ -72,7 +77,7 @@ pub fn hash_into(
     mut out: &mut [u8],
     input: &[u8],
     context: &Context,
-    key: &Key,
+    key: Option<&Key>,
 ) -> Result<(), HydroError> {
     let mut hasher = init(context, key);
     hasher.update(input);
@@ -84,7 +89,7 @@ pub fn hash(
     out_len: usize,
     input: &[u8],
     context: &Context,
-    key: &Key,
+    key: Option<&Key>,
 ) -> Result<Vec<u8>, HydroError> {
     let mut out = vec![0u8; out_len];
     hash_into(&mut out, input, context, key)?;
@@ -181,11 +186,11 @@ mod tests {
         let key = hash::Key::gen();
         assert_ne!(key, hash::Key::gen());
 
-        let mut h = hash::init(&context, &key);
+        let mut h = hash::init(&context, Some(&key));
         h.update(b"test message");
         h.finish(hash::BYTES).unwrap();
 
-        hash::hash(hash::BYTES_MIN, b"test message", &context, &key).unwrap();
+        hash::hash(hash::BYTES_MIN, b"test message", &context, Some(&key)).unwrap();
 
         let keyx: [u8; hash::KEYBYTES] = key.clone().into();
         let keyy: hash::Key = keyx.into();
