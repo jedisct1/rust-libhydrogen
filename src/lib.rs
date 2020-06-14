@@ -4,6 +4,7 @@ use libhydrogen_sys as ffi;
 pub mod errors;
 pub mod hash;
 pub mod kdf;
+pub mod kx;
 pub mod random;
 pub mod secretbox;
 pub mod sign;
