@@ -841,7 +841,13 @@ impl Seed {
 
 impl State {
     pub fn new() -> State {
-        unsafe { MaybeUninit::<State>::uninit().assume_init() }
+        unsafe { MaybeUninit::<State>::zeroed().assume_init() }
+    }
+}
+
+impl Default for State {
+    fn default() -> Self {
+        Self::new()
     }
 }
 
@@ -851,9 +857,21 @@ impl NPacket1 {
     }
 }
 
+impl Default for NPacket1 {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 impl KKPacket1 {
     pub fn new() -> KKPacket1 {
         KKPacket1::from([0u8; KK_PACKET1BYTES])
+    }
+}
+
+impl Default for KKPacket1 {
+    fn default() -> Self {
+        Self::new()
     }
 }
 
@@ -863,9 +881,21 @@ impl KKPacket2 {
     }
 }
 
+impl Default for KKPacket2 {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 impl NKPacket1 {
     pub fn new() -> NKPacket1 {
         NKPacket1::from([0u8; NK_PACKET1BYTES])
+    }
+}
+
+impl Default for NKPacket1 {
+    fn default() -> Self {
+        Self::new()
     }
 }
 
@@ -875,9 +905,21 @@ impl NKPacket2 {
     }
 }
 
+impl Default for NKPacket2 {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 impl XXPacket1 {
     pub fn new() -> XXPacket1 {
         XXPacket1::from([0u8; XX_PACKET1BYTES])
+    }
+}
+
+impl Default for XXPacket1 {
+    fn default() -> Self {
+        Self::new()
     }
 }
 
@@ -887,9 +929,21 @@ impl XXPacket2 {
     }
 }
 
+impl Default for XXPacket2 {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 impl XXPacket3 {
     pub fn new() -> XXPacket3 {
         XXPacket3::from([0u8; XX_PACKET3BYTES])
+    }
+}
+
+impl Default for XXPacket3 {
+    fn default() -> Self {
+        Self::new()
     }
 }
 
