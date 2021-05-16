@@ -2,8 +2,7 @@ use super::ensure_initialized;
 use crate::errors::*;
 use crate::ffi;
 use crate::utils;
-use std::mem::MaybeUninit;
-use std::ptr;
+use core::{mem::MaybeUninit, ptr};
 
 pub const CONTEXTBYTES: usize = ffi::hydro_hash_CONTEXTBYTES as usize;
 pub const KEYBYTES: usize = ffi::hydro_hash_KEYBYTES as usize;

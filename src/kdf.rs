@@ -28,7 +28,7 @@ use super::ensure_initialized;
 use crate::errors::*;
 use crate::ffi;
 use crate::utils;
-use std::mem::MaybeUninit;
+use core::mem::MaybeUninit;
 
 pub const CONTEXTBYTES: usize = ffi::hydro_kdf_CONTEXTBYTES as usize;
 pub const KEYBYTES: usize = ffi::hydro_kdf_KEYBYTES as usize;

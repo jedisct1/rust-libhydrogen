@@ -22,7 +22,7 @@ use super::ensure_initialized;
 use crate::errors::*;
 use crate::ffi;
 use crate::utils;
-use std::mem::MaybeUninit;
+use core::mem::MaybeUninit;
 
 pub const CONTEXTBYTES: usize = ffi::hydro_secretbox_CONTEXTBYTES as usize;
 pub const HEADERBYTES: usize = ffi::hydro_secretbox_HEADERBYTES as usize;

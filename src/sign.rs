@@ -1,8 +1,8 @@
 use super::ensure_initialized;
-use crate::errors::*;
 use crate::ffi;
 use crate::utils;
-use std::mem::{self, MaybeUninit};
+use crate::{errors::*, random};
+use core::mem::{self, size_of_val, MaybeUninit};
 
 pub const BYTES: usize = ffi::hydro_sign_BYTES as usize;
 pub const CONTEXTBYTES: usize = ffi::hydro_sign_CONTEXTBYTES as usize;
@@ -26,6 +26,9 @@ pub struct KeyPair {
 }
 
 #[derive(Debug, Clone)]
+pub struct Seed([u8; SEEDBYTES]);
+
+#[derive(Debug, Clone)]
 pub struct State(ffi::hydro_sign_state);
 
 #[derive(Copy, Clone)]
@@ -33,6 +36,48 @@ pub struct Signature([u8; BYTES]);
 
 pub struct Sign {
     state: State,
+}
+
+impl Drop for Seed {
+    fn drop(&mut self) {
+        utils::memzero(self)
+    }
+}
+
+impl From<[u8; SEEDBYTES]> for Seed {
+    #[inline]
+    fn from(seed: [u8; SEEDBYTES]) -> Seed {
+        Seed(seed)
+    }
+}
+
+impl Into<[u8; SEEDBYTES]> for Seed {
+    #[inline]
+    fn into(self) -> [u8; SEEDBYTES] {
+        self.0
+    }
+}
+
+impl AsRef<[u8]> for Seed {
+    fn as_ref(&self) -> &[u8] {
+        &self.0 as &[u8]
+    }
+}
+
+impl PartialEq for Seed {
+    fn eq(&self, other: &Self) -> bool {
+        utils::equal(self, other)
+    }
+}
+
+impl Eq for Seed {}
+
+impl Seed {
+    pub fn gen() -> Seed {
+        let mut seed_inner = [0u8; SEEDBYTES];
+        random::buf_into(&mut seed_inner);
+        Seed(seed_inner)
+    }
 }
 
 impl Sign {
@@ -224,6 +269,15 @@ impl KeyPair {
             keypair.assume_init()
         }
     }
+
+    pub fn gen_deterministic(seed: &Seed) -> KeyPair {
+        ensure_initialized();
+        unsafe {
+            let mut keypair_c = MaybeUninit::<ffi::hydro_sign_keypair>::uninit();
+            ffi::hydro_sign_keygen_deterministic(keypair_c.as_mut_ptr(), seed.0.as_ptr());
+            KeyPair::from(keypair_c)
+        }
+    }
 }
 
 impl From<&'static str> for Context {
@@ -253,6 +307,25 @@ impl Into<[u8; CONTEXTBYTES]> for Context {
     }
 }
 
+impl From<MaybeUninit<ffi::hydro_sign_keypair>> for KeyPair {
+    fn from(keypair_c: MaybeUninit<ffi::hydro_sign_keypair>) -> KeyPair {
+        unsafe {
+            let mut keypair_c = keypair_c.assume_init();
+            let mut keypair = MaybeUninit::<KeyPair>::uninit();
+            (*keypair.as_mut_ptr())
+                .public_key
+                .0
+                .copy_from_slice(&keypair_c.pk);
+            (*keypair.as_mut_ptr())
+                .secret_key
+                .0
+                .copy_from_slice(&keypair_c.sk);
+            ffi::hydro_memzero(&mut keypair_c as *mut _ as *mut _, size_of_val(&keypair_c));
+            keypair.assume_init()
+        }
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use crate::*;
@@ -278,5 +351,11 @@ mod tests {
         let contextx: [u8; sign::CONTEXTBYTES] = context.into();
         let contexty: sign::Context = contextx.into();
         assert_eq!(context, contexty);
+
+        let keypair = sign::KeyPair::gen_deterministic(&sign::Seed::gen());
+        let s = sign::init(&context);
+        let signature = s.finish_create(&keypair.secret_key).unwrap();
+        let s = sign::init(&context);
+        s.finish_verify(&signature, &keypair.public_key).unwrap();
     }
 }

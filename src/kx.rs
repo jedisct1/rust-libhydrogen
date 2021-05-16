@@ -1,5 +1,5 @@
 use super::ensure_initialized;
-use crate::{errors::HydroError, ffi, random, utils};
+use crate::{errors::*, ffi, random, utils};
 use core::{
     convert::TryFrom,
     fmt,

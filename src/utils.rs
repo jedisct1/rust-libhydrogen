@@ -1,8 +1,8 @@
 use crate::errors::*;
 use crate::ffi;
-use std::cmp::Ordering;
+use core::cmp::Ordering;
+use core::{mem, ptr};
 use std::ffi::CString;
-use std::{mem, ptr};
 
 #[inline]
 pub fn memzero<T>(mut obj: T)
