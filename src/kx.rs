@@ -504,6 +504,7 @@ impl AsRef<[u8]> for Psk {
 
 impl TryFrom<&'static str> for Psk {
     type Error = HydroError;
+
     fn try_from(psk_str: &'static str) -> Result<Psk, HydroError> {
         let psk_str_u8 = psk_str.as_bytes();
         if psk_str_u8.len() != PSKBYTES {
