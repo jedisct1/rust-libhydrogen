@@ -1,11 +1,12 @@
-use super::ensure_initialized;
-use crate::{errors::*, ffi, random, utils};
 use core::{
     convert::TryFrom,
     fmt,
     mem::{size_of_val, MaybeUninit},
     ptr,
 };
+
+use super::ensure_initialized;
+use crate::{errors::*, ffi, random, utils};
 
 pub const PUBLICKEYBYTES: usize = ffi::hydro_kx_PUBLICKEYBYTES as usize;
 pub const SECRETKEYBYTES: usize = ffi::hydro_kx_SECRETKEYBYTES as usize;
@@ -971,8 +972,9 @@ impl KeyPair {
 #[rustfmt::skip::macros(assert)]
 #[cfg(test)]
 mod tests {
-    use crate::*;
     use core::convert::TryFrom;
+
+    use crate::*;
 
     #[test]
     fn test_kx_deterministic_keygen() {

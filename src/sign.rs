@@ -1,8 +1,9 @@
+use core::mem::{self, size_of_val, MaybeUninit};
+
 use super::ensure_initialized;
 use crate::ffi;
 use crate::utils;
 use crate::{errors::*, random};
-use core::mem::{self, size_of_val, MaybeUninit};
 
 pub const BYTES: usize = ffi::hydro_sign_BYTES as usize;
 pub const CONTEXTBYTES: usize = ffi::hydro_sign_CONTEXTBYTES as usize;

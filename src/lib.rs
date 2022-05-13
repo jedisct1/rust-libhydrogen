@@ -11,11 +11,12 @@ pub mod sign;
 pub mod utils;
 pub mod version;
 
-use crate::errors::*;
 use std::sync::{
     atomic::{AtomicBool, Ordering},
     Once,
 };
+
+use crate::errors::*;
 
 static INIT: Once = Once::new();
 static INITIALIZED: AtomicBool = AtomicBool::new(false);
