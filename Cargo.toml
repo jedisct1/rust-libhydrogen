@@ -1,6 +1,6 @@
 [package]
 name = "libhydrogen"
-version = "0.4.1"
+version = "0.4.2"
 authors = ["Frank Denis <github@pureftpd.org>"]
 description = "A modern and easy to use cryptography library"
 license = "ISC"
