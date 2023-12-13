@@ -71,7 +71,7 @@ pub fn hex2bin(hex: &str, ignore: Option<&[u8]>) -> Result<Vec<u8>, HydroError> 
         Some(ignore) => CString::new(ignore)
             .map_err(|_| HydroError::InvalidInput)?
             .into_raw(),
-        None => ptr::null(),
+        None => ptr::null_mut(), // doesn't make sense semantically, but required for `CString::from_raw()`.
     };
     let bin_len = unsafe {
         ffi::hydro_hex2bin(
@@ -83,6 +83,14 @@ pub fn hex2bin(hex: &str, ignore: Option<&[u8]>) -> Result<Vec<u8>, HydroError> 
             ptr::null_mut(),
         )
     };
+    if !ignore_p.is_null() {
+        unsafe {
+            // Even though `into_raw()` is not unsafe, Rust will leak the string.
+            // Manually freeing the string is required, and the documented way
+            // to do it is by recreating a CString using the pointer, and discarding it.
+            _ = CString::from_raw(ignore_p);
+        }
+    }
     if bin_len < 0 {
         return Err(HydroError::InvalidInput);
     }
