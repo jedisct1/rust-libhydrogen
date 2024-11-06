@@ -10,5 +10,5 @@ edition = "2018"
 
 [dependencies]
 anyhow = "1.0"
-thiserror = "1.0"
+thiserror = "2.0"
 libhydrogen-sys = "0.9"
