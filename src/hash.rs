@@ -74,14 +74,14 @@ pub fn init(context: &Context, key: Option<&Key>) -> DefaultHasher {
 }
 
 pub fn hash_into(
-    mut out: &mut [u8],
+    out: &mut [u8],
     input: &[u8],
     context: &Context,
     key: Option<&Key>,
 ) -> Result<(), HydroError> {
     let mut hasher = init(context, key);
     hasher.update(input);
-    hasher.finish_into(&mut out)?;
+    hasher.finish_into(out)?;
     Ok(())
 }
 
@@ -115,10 +115,10 @@ impl From<[u8; KEYBYTES]> for Key {
     }
 }
 
-impl Into<[u8; KEYBYTES]> for Key {
+impl From<Key> for [u8; KEYBYTES] {
     #[inline]
-    fn into(self) -> [u8; KEYBYTES] {
-        self.0
+    fn from(val: Key) -> Self {
+        val.0
     }
 }
 
@@ -167,10 +167,10 @@ impl From<[u8; CONTEXTBYTES]> for Context {
     }
 }
 
-impl Into<[u8; CONTEXTBYTES]> for Context {
+impl From<Context> for [u8; CONTEXTBYTES] {
     #[inline]
-    fn into(self) -> [u8; CONTEXTBYTES] {
-        self.0
+    fn from(val: Context) -> Self {
+        val.0
     }
 }
 

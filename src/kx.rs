@@ -408,10 +408,10 @@ impl From<[u8; SECRETKEYBYTES]> for SecretKey {
     }
 }
 
-impl Into<[u8; SECRETKEYBYTES]> for SecretKey {
+impl From<SecretKey> for [u8; SECRETKEYBYTES] {
     #[inline]
-    fn into(self) -> [u8; SECRETKEYBYTES] {
-        self.0
+    fn from(val: SecretKey) -> Self {
+        val.0
     }
 }
 
@@ -436,10 +436,10 @@ impl From<[u8; PUBLICKEYBYTES]> for PublicKey {
     }
 }
 
-impl Into<[u8; PUBLICKEYBYTES]> for PublicKey {
+impl From<PublicKey> for [u8; PUBLICKEYBYTES] {
     #[inline]
-    fn into(self) -> [u8; PUBLICKEYBYTES] {
-        self.0
+    fn from(val: PublicKey) -> Self {
+        val.0
     }
 }
 
@@ -462,10 +462,10 @@ impl From<[u8; SEEDBYTES]> for Seed {
     }
 }
 
-impl Into<[u8; SEEDBYTES]> for Seed {
+impl From<Seed> for [u8; SEEDBYTES] {
     #[inline]
-    fn into(self) -> [u8; SEEDBYTES] {
-        self.0
+    fn from(val: Seed) -> Self {
+        val.0
     }
 }
 
@@ -490,10 +490,10 @@ impl From<[u8; PSKBYTES]> for Psk {
     }
 }
 
-impl Into<[u8; PSKBYTES]> for Psk {
+impl From<Psk> for [u8; PSKBYTES] {
     #[inline]
-    fn into(self) -> [u8; PSKBYTES] {
-        self.0
+    fn from(val: Psk) -> Self {
+        val.0
     }
 }
 
@@ -525,10 +525,10 @@ impl From<[u8; N_PACKET1BYTES]> for NPacket1 {
     }
 }
 
-impl Into<[u8; N_PACKET1BYTES]> for NPacket1 {
+impl From<NPacket1> for [u8; N_PACKET1BYTES] {
     #[inline]
-    fn into(self) -> [u8; N_PACKET1BYTES] {
-        self.0
+    fn from(val: NPacket1) -> Self {
+        val.0
     }
 }
 
@@ -545,10 +545,10 @@ impl From<[u8; KK_PACKET1BYTES]> for KKPacket1 {
     }
 }
 
-impl Into<[u8; KK_PACKET1BYTES]> for KKPacket1 {
+impl From<KKPacket1> for [u8; KK_PACKET1BYTES] {
     #[inline]
-    fn into(self) -> [u8; KK_PACKET1BYTES] {
-        self.0
+    fn from(val: KKPacket1) -> Self {
+        val.0
     }
 }
 
@@ -565,10 +565,10 @@ impl From<[u8; KK_PACKET2BYTES]> for KKPacket2 {
     }
 }
 
-impl Into<[u8; KK_PACKET2BYTES]> for KKPacket2 {
+impl From<KKPacket2> for [u8; KK_PACKET2BYTES] {
     #[inline]
-    fn into(self) -> [u8; KK_PACKET2BYTES] {
-        self.0
+    fn from(val: KKPacket2) -> Self {
+        val.0
     }
 }
 
@@ -585,10 +585,10 @@ impl From<[u8; NK_PACKET1BYTES]> for NKPacket1 {
     }
 }
 
-impl Into<[u8; NK_PACKET1BYTES]> for NKPacket1 {
+impl From<NKPacket1> for [u8; NK_PACKET1BYTES] {
     #[inline]
-    fn into(self) -> [u8; NK_PACKET1BYTES] {
-        self.0
+    fn from(val: NKPacket1) -> Self {
+        val.0
     }
 }
 
@@ -605,10 +605,10 @@ impl From<[u8; NK_PACKET2BYTES]> for NKPacket2 {
     }
 }
 
-impl Into<[u8; NK_PACKET2BYTES]> for NKPacket2 {
+impl From<NKPacket2> for [u8; NK_PACKET2BYTES] {
     #[inline]
-    fn into(self) -> [u8; NK_PACKET2BYTES] {
-        self.0
+    fn from(val: NKPacket2) -> Self {
+        val.0
     }
 }
 
@@ -625,10 +625,10 @@ impl From<[u8; XX_PACKET1BYTES]> for XXPacket1 {
     }
 }
 
-impl Into<[u8; XX_PACKET1BYTES]> for XXPacket1 {
+impl From<XXPacket1> for [u8; XX_PACKET1BYTES] {
     #[inline]
-    fn into(self) -> [u8; XX_PACKET1BYTES] {
-        self.0
+    fn from(val: XXPacket1) -> Self {
+        val.0
     }
 }
 
@@ -645,10 +645,10 @@ impl From<[u8; XX_PACKET2BYTES]> for XXPacket2 {
     }
 }
 
-impl Into<[u8; XX_PACKET2BYTES]> for XXPacket2 {
+impl From<XXPacket2> for [u8; XX_PACKET2BYTES] {
     #[inline]
-    fn into(self) -> [u8; XX_PACKET2BYTES] {
-        self.0
+    fn from(val: XXPacket2) -> Self {
+        val.0
     }
 }
 
@@ -665,10 +665,10 @@ impl From<[u8; XX_PACKET3BYTES]> for XXPacket3 {
     }
 }
 
-impl Into<[u8; XX_PACKET3BYTES]> for XXPacket3 {
+impl From<XXPacket3> for [u8; XX_PACKET3BYTES] {
     #[inline]
-    fn into(self) -> [u8; XX_PACKET3BYTES] {
-        self.0
+    fn from(val: XXPacket3) -> Self {
+        val.0
     }
 }
 
@@ -691,10 +691,10 @@ impl From<[u8; SESSIONKEYBYTES]> for SessionKey {
     }
 }
 
-impl Into<[u8; SESSIONKEYBYTES]> for SessionKey {
+impl From<SessionKey> for [u8; SESSIONKEYBYTES] {
     #[inline]
-    fn into(self) -> [u8; SESSIONKEYBYTES] {
-        self.0
+    fn from(val: SessionKey) -> Self {
+        val.0
     }
 }
 

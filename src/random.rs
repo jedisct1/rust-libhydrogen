@@ -77,10 +77,10 @@ impl From<[u8; SEEDBYTES]> for Seed {
     }
 }
 
-impl Into<[u8; SEEDBYTES]> for Seed {
+impl From<Seed> for [u8; SEEDBYTES] {
     #[inline]
-    fn into(self) -> [u8; SEEDBYTES] {
-        self.0
+    fn from(val: Seed) -> Self {
+        val.0
     }
 }
 

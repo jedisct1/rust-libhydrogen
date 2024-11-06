@@ -21,6 +21,6 @@ mod tests {
     #[test]
     fn test_version() {
         assert!(version::major() + version::minor() > 0);
-        assert_eq!(version::string().is_empty(), false);
+        assert!(!version::string().is_empty());
     }
 }

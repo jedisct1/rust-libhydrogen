@@ -52,10 +52,10 @@ impl From<[u8; SEEDBYTES]> for Seed {
     }
 }
 
-impl Into<[u8; SEEDBYTES]> for Seed {
+impl From<Seed> for [u8; SEEDBYTES] {
     #[inline]
-    fn into(self) -> [u8; SEEDBYTES] {
-        self.0
+    fn from(val: Seed) -> Self {
+        val.0
     }
 }
 
@@ -178,10 +178,10 @@ impl From<[u8; SECRETKEYBYTES]> for SecretKey {
     }
 }
 
-impl Into<[u8; SECRETKEYBYTES]> for SecretKey {
+impl From<SecretKey> for [u8; SECRETKEYBYTES] {
     #[inline]
-    fn into(self) -> [u8; SECRETKEYBYTES] {
-        self.0
+    fn from(val: SecretKey) -> Self {
+        val.0
     }
 }
 
@@ -206,10 +206,10 @@ impl From<[u8; BYTES]> for Signature {
     }
 }
 
-impl Into<[u8; BYTES]> for Signature {
+impl From<Signature> for [u8; BYTES] {
     #[inline]
-    fn into(self) -> [u8; BYTES] {
-        self.0
+    fn from(val: Signature) -> Self {
+        val.0
     }
 }
 
@@ -234,10 +234,10 @@ impl From<[u8; PUBLICKEYBYTES]> for PublicKey {
     }
 }
 
-impl Into<[u8; PUBLICKEYBYTES]> for PublicKey {
+impl From<PublicKey> for [u8; PUBLICKEYBYTES] {
     #[inline]
-    fn into(self) -> [u8; PUBLICKEYBYTES] {
-        self.0
+    fn from(val: PublicKey) -> Self {
+        val.0
     }
 }
 
@@ -301,10 +301,10 @@ impl From<[u8; CONTEXTBYTES]> for Context {
     }
 }
 
-impl Into<[u8; CONTEXTBYTES]> for Context {
+impl From<Context> for [u8; CONTEXTBYTES] {
     #[inline]
-    fn into(self) -> [u8; CONTEXTBYTES] {
-        self.0
+    fn from(val: Context) -> Self {
+        val.0
     }
 }
 
