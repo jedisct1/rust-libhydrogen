@@ -1,8 +1,9 @@
 [package]
+keywords = ["libhydrogen", "cryptography", "encryption", "signatures", "key-exchange"]
 name = "libhydrogen"
 version = "0.4.6"
 authors = ["Frank Denis <github@pureftpd.org>"]
-description = "A modern and easy to use cryptography library"
+description = "Rust bindings to libhydrogen for authenticated encryption, signatures, hashing, key derivation, and key exchange"
 license = "ISC"
 homepage = "https://github.com/jedisct1/rust-libhydrogen"
 repository = "https://github.com/jedisct1/rust-libhydrogen"
